@@ -49,7 +49,14 @@ const handleChange = ({ target }) => {
 };
 
 const filtrarAuto = () => {
-  const resultado = autos.filter(filtrarMarca).filter(filtrarYear);
+  const resultado = autos
+    .filter(filtrarMarca)
+    .filter(filtrarYear)
+    .filter(filtrarPrecioMaximo)
+    .filter(filtrarPrecioMinimo)
+    .filter(filtrarPuertas)
+    .filter(filtrarTransmision)
+    .filter(filtrarColor);
 
   limpiarAutos();
   mostrarAutos(resultado);
@@ -90,6 +97,36 @@ const filtrarPrecioMinimo = (auto) => {
 
   if (year) {
     return auto.precioMinimo <= parseInt(precioMinimo);
+  }
+
+  return auto;
+};
+
+const filtrarPuertas = (auto) => {
+  const { puertas } = datosBusqueda;
+
+  if (year) {
+    return auto.puertas === parseInt(puertas);
+  }
+
+  return auto;
+};
+
+const filtrarTransmision = (auto) => {
+  const { transmision } = datosBusqueda;
+
+  if (year) {
+    return auto.transmision === transmision;
+  }
+
+  return auto;
+};
+
+const filtrarColor = (auto) => {
+  const { color } = datosBusqueda;
+
+  if (year) {
+    return auto.color === color;
   }
 
   return auto;
