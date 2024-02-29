@@ -85,7 +85,7 @@ const filtrarYear = (auto) => {
 const filtrarPrecioMaximo = (auto) => {
   const { precioMaximo } = datosBusqueda;
 
-  if (year) {
+  if (precioMaximo) {
     return auto.precioMaximo >= parseInt(precioMaximo);
   }
 
@@ -95,7 +95,7 @@ const filtrarPrecioMaximo = (auto) => {
 const filtrarPrecioMinimo = (auto) => {
   const { precioMinimo } = datosBusqueda;
 
-  if (year) {
+  if (precioMinimo) {
     return auto.precioMinimo <= parseInt(precioMinimo);
   }
 
@@ -105,7 +105,7 @@ const filtrarPrecioMinimo = (auto) => {
 const filtrarPuertas = (auto) => {
   const { puertas } = datosBusqueda;
 
-  if (year) {
+  if (puertas) {
     return auto.puertas === parseInt(puertas);
   }
 
@@ -115,7 +115,7 @@ const filtrarPuertas = (auto) => {
 const filtrarTransmision = (auto) => {
   const { transmision } = datosBusqueda;
 
-  if (year) {
+  if (transmision) {
     return auto.transmision === transmision;
   }
 
@@ -125,7 +125,7 @@ const filtrarTransmision = (auto) => {
 const filtrarColor = (auto) => {
   const { color } = datosBusqueda;
 
-  if (year) {
+  if (color) {
     return auto.color === color;
   }
 
@@ -133,6 +133,15 @@ const filtrarColor = (auto) => {
 };
 
 const mostrarAutos = (nuevosAutos) => {
+  if (nuevosAutos?.length === 0) {
+    const noResultado = document.createElement('div');
+    noResultado.classList.add('alerta', 'error');
+    noResultado.textContent =
+      'No hay resultados, intenta con otros términos de búsqueda';
+    resultado.appendChild(noResultado);
+    return;
+  }
+
   if (!nuevosAutos) {
     autos.forEach((auto) => {
       const { marca, modelo, year, precio, puertas, color, transmision } = auto;
