@@ -10,65 +10,66 @@ let articulos = [];
 
 // Definimos los listeners
 const cargarEventListeners = () => {
-    listaCursos.addEventListener('click', agregarCurso);
-    botonVaciarCarrito.addEventListener('click', vaciarCarrito);
+  listaCursos.addEventListener('click', agregarCurso);
+  botonVaciarCarrito.addEventListener('click', vaciarCarrito);
+  document.addEventListener('DOMContentLoaded', () => {
+    articulos = JSON.parse(localStorage.getItem('carrito')) ?? [];
+
+    construirItemsCarrito();
+  });
 };
 
 // Definimos las funciones
 const agregarCurso = (event) => {
-    event.preventDefault();
-    // console.log(event.target.classList)
+  event.preventDefault();
+  // console.log(event.target.classList)
 
-    if (event.target.classList.contains('agregar-carrito')) {
-        const cursoSeleccionado = event.target.parentElement.parentElement;
-        leerDatosCurso(cursoSeleccionado);
-    }
+  if (event.target.classList.contains('agregar-carrito')) {
+    const cursoSeleccionado = event.target.parentElement.parentElement;
+    leerDatosCurso(cursoSeleccionado);
+  }
 };
 
 const leerDatosCurso = (curso) => {
-    const infoCurso = {
-        id: curso.querySelector('a').getAttribute('data-id'),
-        img: curso.querySelector('img').src,
-        titulo: curso.querySelector('h4').textContent,
-        precio: curso.querySelector('.precio span').textContent,
-        autor: curso.querySelector('p').textContent,
-        cantidad: 1,
-    }
+  const infoCurso = {
+    id: curso.querySelector('a').getAttribute('data-id'),
+    img: curso.querySelector('img').src,
+    titulo: curso.querySelector('h4').textContent,
+    precio: curso.querySelector('.precio span').textContent,
+    autor: curso.querySelector('p').textContent,
+    cantidad: 1,
+  };
 
-    // Verificamos si el producto existe dentro del carrito
-    const existe = articulos.some(curso => curso.id === infoCurso.id)
+  // Verificamos si el producto existe dentro del carrito
+  const existe = articulos.some((curso) => curso.id === infoCurso.id);
 
-    if (existe) {
-        const cursosActualizados = articulos.map(curso => {
-            if (curso.id === infoCurso.id) {
-                curso.cantidad++;
-                return curso;
-            } else {
-                return curso;
-            }
+  if (existe) {
+    const cursosActualizados = articulos.map((curso) => {
+      if (curso.id === infoCurso.id) {
+        curso.cantidad++;
+        return curso;
+      } else {
+        return curso;
+      }
+    });
 
-        })
+    articulos = [...cursosActualizados];
+  } else {
+    articulos = [...articulos, infoCurso];
+  }
 
-        articulos = [...cursosActualizados]
+  guardarLocalStorage();
 
-        console.log(articulos)
-    } else {
-        articulos = [...articulos, infoCurso]
-
-        console.log(articulos)
-    }
-
-    vaciarItemsCarrito()
-    construirItemsCarrito()
-}
+  vaciarItemsCarrito();
+  construirItemsCarrito();
+};
 
 const construirItemsCarrito = () => {
+  articulos.forEach((curso) => {
+    const { img, titulo, precio, cantidad, id } = curso;
 
-    articulos.forEach(curso => {
-        const {img, titulo, precio, cantidad, id} = curso;
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
+    const row = document.createElement('tr');
+    row.innerHTML = `
             <td>
                 <img src="${img}" width="100" alt="Imagen de Curso de ${titulo}">
             </td>
@@ -80,31 +81,37 @@ const construirItemsCarrito = () => {
             </td>
         `;
 
-        const deleteButton = row.querySelector('.borrar-curso')
+    const deleteButton = row.querySelector('.borrar-curso');
 
-        deleteButton.addEventListener('click', () => {
-            articulos = articulos.filter(curso => curso.id !== id)
+    deleteButton.addEventListener('click', () => {
+      articulos = articulos.filter((curso) => curso.id !== id);
 
-            vaciarItemsCarrito()
-            construirItemsCarrito()
-        })
+      guardarLocalStorage();
 
-        listaCarrito.appendChild(row);
+      vaciarItemsCarrito();
+      construirItemsCarrito();
     });
-}
+
+    listaCarrito.appendChild(row);
+  });
+};
 
 const vaciarItemsCarrito = () => {
-    while (listaCarrito.firstChild) {
-        listaCarrito.removeChild(listaCarrito.firstChild);
-    }
-}
+  while (listaCarrito.firstChild) {
+    listaCarrito.removeChild(listaCarrito.firstChild);
+  }
+};
 
 const vaciarCarrito = () => {
-    articulos = []
+  articulos = [];
 
-    while (listaCarrito.firstChild) {
-        listaCarrito.removeChild(listaCarrito.firstChild);
-    }
-}
+  while (listaCarrito.firstChild) {
+    listaCarrito.removeChild(listaCarrito.firstChild);
+  }
+};
+
+const guardarLocalStorage = () => {
+  localStorage.setItem('carrito', JSON.stringify(articulos));
+};
 
 cargarEventListeners();
