@@ -2,7 +2,9 @@ const listaTweets = document.querySelector('#lista-tweets');
 const formulario = document.querySelector('#formulario');
 const tweetTextArea = document.querySelector('#tweet');
 
-let tweets = [];
+let tweets = JSON.parse(localStorage.getItem('tweets')) ?? [];
+
+mostrarTweets();
 
 // Eventos
 formulario.addEventListener('submit', handleSubmit);
@@ -21,6 +23,8 @@ function handleSubmit(event) {
 
   //   alert('Buena, no sos opa');
   tweets = [...tweets, tweet];
+
+  localStorage.setItem('tweets', JSON.stringify(tweets));
 
   tweetTextArea.value = '';
 
