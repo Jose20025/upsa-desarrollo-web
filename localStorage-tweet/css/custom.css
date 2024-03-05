@@ -25,7 +25,12 @@ body {
 }
 
 #lista-tweets {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .error {
@@ -39,4 +44,30 @@ body {
   color: white;
 
   border-radius: 10px;
+}
+
+.tweet-card {
+  background-color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  width: 200px;
+
+  text-align: center;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tweet-card p {
+  margin: 0;
+}
+
+.delete-button {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 20px;
+
+  margin: 0;
 }
