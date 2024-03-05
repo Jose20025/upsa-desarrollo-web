@@ -1,25 +1,42 @@
-h1, h2 {
-    text-align: center;
+h1,
+h2 {
+  text-align: center;
 }
 
 #contenido {
-    margin-top: 40px;
+  margin-top: 40px;
 }
+
+body {
+  background: rgb(238, 174, 202);
+  background: radial-gradient(
+    circle,
+    rgba(238, 174, 202, 1) 0%,
+    rgba(148, 187, 233, 1) 100%
+  );
+}
+
 .borrar-tweet,
 .borrar-tweet:hover {
-    float: right;
-    cursor: pointer;
-    color: red;
-    font-weight: bold;
+  float: right;
+  cursor: pointer;
+  color: red;
+  font-weight: bold;
+}
+
+#lista-tweets {
+  text-align: center;
 }
 
 .error {
-    background-color: red;
-    text-align: center;
-    padding: 10px;
-    text-transform: uppercase;
-    font-weight: bold;
-    max-width: 400px;
-    margin: 0 auto;
-    color: white;
+  background-color: red;
+  text-align: center;
+  padding: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+  max-width: 400px;
+  margin: 0 auto;
+  color: white;
+
+  border-radius: 10px;
 }
