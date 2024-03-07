@@ -90,7 +90,7 @@ function handleSubmit(event) {
 
   if (nombre === '' && cantidad === '') {
     return ui.imprimirAlerta('Los datos son obligatorios', 'error');
-  } else if(isNaN(Number(cantidad)) || Number(cantidad) <= 0){
-    return ui.imprimirAlerta("Cantidad no válida", "error");
+  } else if (isNaN(Number(cantidad)) || Number(cantidad) <= 0) {
+    return ui.imprimirAlerta('Cantidad no válida', 'error');
   }
 }
