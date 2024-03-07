@@ -40,7 +40,7 @@ class UI {
     // Crear div
     const alertaDiv = document.createElement('div');
 
-    alertaDiv.classList.add('text-center', 'alert', 'mt-2');
+    alertaDiv.classList.add('text-center', 'alert');
     alertaDiv.textContent = mensaje;
 
     if (tipo === 'error') {
@@ -50,7 +50,7 @@ class UI {
     }
 
     // Mostrar el mensaje
-    formulario.appendChild(alertaDiv);
+    document.querySelector('.primario').insertBefore(alertaDiv, formulario);
   }
 }
 
