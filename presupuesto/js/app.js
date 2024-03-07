@@ -51,6 +51,10 @@ class UI {
 
     // Mostrar el mensaje
     document.querySelector('.primario').insertBefore(alertaDiv, formulario);
+
+    setTimeout(() => {
+      alertaDiv.remove();
+    }, 3000);
   }
 }
 
@@ -85,6 +89,8 @@ function handleSubmit(event) {
   const cantidad = cantidadInput.value;
 
   if (nombre === '' && cantidad === '') {
-    ui.imprimirAlerta('Los datos son obligatorios', 'error');
+    return ui.imprimirAlerta('Los datos son obligatorios', 'error');
+  } else if(isNaN(Number(cantidad)) || Number(cantidad) <= 0){
+    return ui.imprimirAlerta("Cantidad no válida", "error");
   }
 }
