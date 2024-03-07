@@ -54,7 +54,7 @@ class UI {
 
     setTimeout(() => {
       alertaDiv.remove();
-    }, 3000);
+    }, 2000);
   }
 }
 
