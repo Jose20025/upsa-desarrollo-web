@@ -2,6 +2,8 @@
 const formulario = document.querySelector('#agregar-gasto');
 const gastoInput = document.querySelector('#gasto');
 const cantidadInput = document.querySelector('#cantidad');
+const spanTotal = document.querySelector('#total');
+const spanRestante = document.querySelector('#restante');
 
 const listaGastos = document.querySelector('#gastos ul');
 
@@ -29,9 +31,6 @@ class UI {
     const { presupuesto: monto, restante } = presupuesto;
 
     // Agregar HTML
-    const spanTotal = document.querySelector('#total');
-    const spanRestante = document.querySelector('#restante');
-
     spanTotal.textContent = monto;
     spanRestante.textContent = restante;
   }
@@ -55,6 +54,18 @@ class UI {
     setTimeout(() => {
       alertaDiv.remove();
     }, 2000);
+  }
+
+  agregarGastoHTML(gasto, precio) {
+    const liGasto = document.createElement('li');
+
+    liGasto.textContent = `${gasto} - $ ${precio}`;
+
+    listaGastos.appendChild(liGasto);
+  }
+
+  cambiarRestante(precio) {
+    spanRestante.textContent -= Number(precio);
   }
 }
 
@@ -88,9 +99,17 @@ function handleSubmit(event) {
   const nombre = gastoInput.value;
   const cantidad = cantidadInput.value;
 
-  if (nombre === '' && cantidad === '') {
+  if (nombre === '' || cantidad === '') {
     return ui.imprimirAlerta('Los datos son obligatorios', 'error');
   } else if (isNaN(Number(cantidad)) || Number(cantidad) <= 0) {
     return ui.imprimirAlerta('Cantidad no válida', 'error');
+  } else if (Number(cantidad) > presupuesto.presupuesto) {
+    return ui.imprimirAlerta(
+      'La cantidad no debe ser mayor al presupuesto',
+      'error'
+    );
   }
+
+  ui.agregarGastoHTML(nombre, cantidad);
+  ui.cambiarRestante(cantidad);
 }
