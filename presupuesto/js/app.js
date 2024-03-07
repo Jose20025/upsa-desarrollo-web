@@ -40,11 +40,17 @@ class UI {
     // Crear div
     const alertaDiv = document.createElement('div');
 
-    alertaDiv.classList.add('text-center', 'alert');
+    alertaDiv.classList.add('text-center', 'alert', 'mt-2');
+    alertaDiv.textContent = mensaje;
 
-    if (tipo === '') {
+    if (tipo === 'error') {
       alertaDiv.classList.add('alert-danger');
+    } else {
+      alertaDiv.classList.add('alert-success');
     }
+
+    // Mostrar el mensaje
+    formulario.appendChild(alertaDiv);
   }
 }
 
