@@ -5,7 +5,7 @@ const cantidadInput = document.querySelector('#cantidad');
 const spanTotal = document.querySelector('#total');
 const spanRestante = document.querySelector('#restante');
 
-const listaGastos = document.querySelector('#gastos ul');
+const listadoGastos = document.querySelector('#gastos ul');
 
 let presupuesto;
 
@@ -20,15 +20,28 @@ function cargarEventListeners() {
 // * CLASES
 class Presupuesto {
   constructor(monto) {
-    this.presupuesto = Number(monto);
+    this.monto = Number(monto);
     this.restante = Number(monto);
-    this.listaGastos = [];
+    this.gastos = [];
+  }
+
+  nuevoGasto(gasto) {
+    this.restante -= gasto.cantidad;
+    this.gastos = [...this.gastos, gasto];
+  }
+
+  eliminarGasto(id) {
+    const gastoEncontrado = this.gastos.find((gasto) => gasto.id === id);
+
+    this.restante += Number(gastoEncontrado.cantidad);
+
+    this.gastos = this.gastos.filter((gasto) => gasto.id !== id);
   }
 }
 
 class UI {
   insertarPresupuesto(presupuesto) {
-    const { presupuesto: monto, restante } = presupuesto;
+    const { monto, restante } = presupuesto;
 
     // Agregar HTML
     spanTotal.textContent = monto;
@@ -56,16 +69,44 @@ class UI {
     }, 2000);
   }
 
-  agregarGastoHTML(gasto, precio) {
-    const liGasto = document.createElement('li');
+  mostrarGastosHTML(gastos) {
+    this.limpiarHTML();
 
-    liGasto.textContent = `${gasto} - $ ${precio}`;
+    gastos.forEach((gasto) => {
+      const liGasto = document.createElement('li');
+      const botonBorrar = document.createElement('button');
 
-    listaGastos.appendChild(liGasto);
+      const { id, nombre, cantidad } = gasto;
+
+      botonBorrar.textContent = 'Borrar';
+      botonBorrar.className = 'btn btn-danger';
+
+      botonBorrar.addEventListener('click', () => {
+        presupuesto.eliminarGasto(id);
+        this.mostrarGastosHTML(presupuesto.gastos);
+        this.cambiarRestante(-cantidad);
+      });
+
+      liGasto.className =
+        'list-group-item d-flex justify-content-between align-items-center';
+
+      liGasto.innerHTML = `${nombre}
+      <span class="badge badge-primary badge-pill">Bs. ${cantidad}</span>`;
+      liGasto.id = id;
+
+      liGasto.appendChild(botonBorrar);
+      listadoGastos.appendChild(liGasto);
+    });
   }
 
-  cambiarRestante(precio) {
-    spanRestante.textContent -= Number(precio);
+  limpiarHTML() {
+    while (listadoGastos.firstChild) {
+      listadoGastos.firstChild.remove();
+    }
+  }
+
+  cambiarRestante(cantidad) {
+    spanRestante.textContent -= Number(cantidad);
   }
 }
 
@@ -83,6 +124,7 @@ function preguntarPresupuesto() {
     Number(presupuestoUsuario) <= 0
   ) {
     window.location.reload();
+    return;
   }
 
   // Si está todo validado
@@ -100,16 +142,33 @@ function handleSubmit(event) {
   const cantidad = cantidadInput.value;
 
   if (nombre === '' || cantidad === '') {
-    return ui.imprimirAlerta('Los datos son obligatorios', 'error');
+    ui.imprimirAlerta('Los datos son obligatorios', 'error');
+    return;
   } else if (isNaN(Number(cantidad)) || Number(cantidad) <= 0) {
-    return ui.imprimirAlerta('Cantidad no válida', 'error');
-  } else if (Number(cantidad) > presupuesto.presupuesto) {
-    return ui.imprimirAlerta(
-      'La cantidad no debe ser mayor al presupuesto',
-      'error'
-    );
+    ui.imprimirAlerta('Cantidad no válida', 'error');
+    return;
   }
 
-  ui.agregarGastoHTML(nombre, cantidad);
+  // ui.cambiarRestante(cantidad);
+
+  const gasto = { id: Date.now(), nombre, cantidad };
+
+  presupuesto.nuevoGasto(gasto);
   ui.cambiarRestante(cantidad);
+
+  ui.imprimirAlerta('El gasto fue agregado correctamente!');
+
+  const { gastos, restante, monto } = presupuesto;
+
+  ui.mostrarGastosHTML(gastos, presupuesto);
+
+  if (restante <= 0) {
+    spanRestante.parentElement.parentElement.classList.remove('alert-warning');
+    spanRestante.parentElement.parentElement.classList.add('alert-danger');
+  } else if (restante <= 0.3 * monto) {
+    spanRestante.parentElement.parentElement.classList.remove('alert-success');
+    spanRestante.parentElement.parentElement.classList.add('alert-warning');
+  }
+
+  formulario.reset();
 }
