@@ -10,8 +10,6 @@ const formulario = document.querySelector('#nueva-cita');
 
 const listadoCitas = document.querySelector('#citas');
 
-let citas;
-
 // Clases
 class Cita {
   constructor({ mascota, propietario, telefono, fecha, hora, sintomas }) {
@@ -124,6 +122,8 @@ class UI {
 }
 
 const ui = new UI();
+
+let citas;
 
 document.addEventListener('DOMContentLoaded', () => {
   cargarListeners();
