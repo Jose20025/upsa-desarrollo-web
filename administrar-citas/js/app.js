@@ -135,7 +135,7 @@ function cargarListeners() {
   formulario.addEventListener('submit', handleSubmit);
 }
 
-function handleSubmit(event) {
+const handleSubmit = (event) => {
   event.preventDefault();
 
   let validado = true;
@@ -168,6 +168,15 @@ function handleSubmit(event) {
   if (fechaInput.value === '' || !fechaInput.value) {
     // Fecha
     ui.mostrarAlerta(fechaInput, 'La fecha de la cita es requerida');
+    validado = false;
+  } else if (isNaN(new Date(fechaInput.value).getTime())) {
+    ui.mostrarAlerta(fechaInput, 'La fecha de la cita es invalida');
+    validado = false;
+  } else if (new Date(fechaInput.value).getTime() < Date.now()) {
+    ui.mostrarAlerta(
+      fechaInput,
+      'La fecha de la cita no puede ser anterior a la fecha de hoy'
+    );
     validado = false;
   }
 
@@ -202,4 +211,4 @@ function handleSubmit(event) {
   ui.mostrarConfirmacion();
 
   formulario.reset();
-}
+};
