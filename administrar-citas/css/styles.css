@@ -58,3 +58,10 @@ textarea {
 svg {
   width: 21px;
 }
+
+.botones-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}

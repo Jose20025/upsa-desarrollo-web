@@ -15,6 +15,7 @@ let citas;
 // Clases
 class Cita {
   constructor({ mascota, propietario, telefono, fecha, hora, sintomas }) {
+    this.id = new Date().toISOString();
     this.mascota = mascota;
     this.propietario = propietario;
     this.telefono = telefono;
@@ -31,6 +32,10 @@ class Citas {
 
   agregarCita(cita) {
     this.citas.push(cita);
+  }
+
+  eliminarCita(id) {
+    this.citas = this.citas.filter((cita) => cita.id != id);
   }
 }
 
@@ -70,7 +75,8 @@ class UI {
     const { citas: listaCitas } = citas;
 
     listaCitas.forEach((cita) => {
-      const { mascota, propietario, telefono, fecha, hora, sintomas } = cita;
+      const { id, mascota, propietario, telefono, fecha, hora, sintomas } =
+        cita;
 
       const liCita = document.createElement('li');
 
@@ -86,10 +92,16 @@ class UI {
       `;
 
       const botonesDiv = document.createElement('div');
-      botonesDiv.className = 'flex justify-content-between gap-2';
+      botonesDiv.className = 'botones-div';
 
       const botonEliminar = document.createElement('button');
       const botonEditar = document.createElement('button');
+
+      botonEliminar.addEventListener('click', () => {
+        citas.eliminarCita(id);
+
+        ui.mostrarCitas(citas);
+      });
 
       botonEliminar.textContent = 'Eliminar';
       botonEditar.textContent = 'Editar';
@@ -148,10 +160,13 @@ function handleSubmit(event) {
   if (telefonoInput.value === '' || !telefonoInput.value) {
     ui.mostrarAlerta(telefonoInput, 'El telefono es requerido');
     validado = false;
+  } else if (isNaN(telefonoInput.value)) {
+    ui.mostrarAlerta(telefonoInput, 'El telefono es invalido');
+    validado = false;
   }
 
-  // Fecha
   if (fechaInput.value === '' || !fechaInput.value) {
+    // Fecha
     ui.mostrarAlerta(fechaInput, 'La fecha de la cita es requerida');
     validado = false;
   }
