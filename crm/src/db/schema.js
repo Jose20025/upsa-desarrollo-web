@@ -9,7 +9,7 @@ const typeDefs = gql`
     dateCreated: String
   }
 
-  input userInput {
+  input UserInput {
     name: String
     lastName: String
     email: String
@@ -20,8 +20,18 @@ const typeDefs = gql`
     getStudent: String
   }
 
+  type Token {
+    token: String
+  }
+
+  input UserAuthInput {
+    email: String
+    password: String
+  }
+
   type Mutation {
-    newUser(input: userInput): User
+    newUser(input: UserInput): User
+    userAuth(input: UserAuthInput): Token
   }
 `;
 
