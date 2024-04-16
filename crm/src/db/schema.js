@@ -2,7 +2,7 @@ import { gql } from 'apollo-server';
 
 const typeDefs = gql`
   type User {
-    id: ID
+    _id: ID
     name: String
     lastName: String
     email: String
@@ -17,7 +17,7 @@ const typeDefs = gql`
   }
 
   type Query {
-    getStudent: String
+    getUser(token: String): User
   }
 
   type Token {

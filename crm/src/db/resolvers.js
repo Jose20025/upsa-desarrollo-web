@@ -5,7 +5,11 @@ import jwt from 'jsonwebtoken';
 
 const resolvers = {
   Query: {
-    getStudent: () => 'Student found!',
+    getUser: (_, { token }) => {
+      const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+      return decoded.user;
+    },
   },
   Mutation: {
     newUser: async (_, { input }) => {
@@ -49,7 +53,7 @@ const resolvers = {
         {
           user,
         },
-        'secret'
+        process.env.SECRET_KEY
       );
 
       return { token };
