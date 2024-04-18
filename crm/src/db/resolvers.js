@@ -2,6 +2,8 @@ import { validatePassword } from '../utils/validatePasswords.js';
 import User from '../models/User.model.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import Product from '../models/Product.model.js';
+import Client from '../models/Client.model.js';
 
 const resolvers = {
   Query: {
@@ -9,6 +11,36 @@ const resolvers = {
       const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
       return decoded.user;
+    },
+
+    getAllProducts: async () => {
+      try {
+        const products = await Product.find();
+
+        return products;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    getProductById: async (_, { id }) => {
+      try {
+        const product = await Product.findById(id);
+
+        return product;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    getAllClients: async () => {
+      try {
+        const clients = await Client.find();
+
+        return clients;
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
   Mutation: {
@@ -58,6 +90,60 @@ const resolvers = {
 
       return { token };
     },
+
+    newProduct: async (_, { input }) => {
+      const { name } = input;
+
+      const productExists = await Product.findOne({ name });
+
+      if (productExists) throw new Error('El producto ya existe');
+
+      try {
+        const newProduct = new Product(input);
+
+        await newProduct.save();
+
+        return newProduct;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    updateProduct: async (_, { id, input }) => {
+      const product = await Product.findById(id);
+
+      if (!product) throw new Error('El producto no existe');
+
+      try {
+        const updatedProduct = await Product.findByIdAndUpdate(
+          { _id: id },
+          input,
+          { new: true }
+        );
+
+        return updatedProduct;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    deleteProduct: async (_, { id }) => {
+      try {
+        const product = await Product.findById(id);
+
+        if (!product) throw new Error('Burro, no existe');
+
+        await product.deleteOne();
+
+        return 'Belleza, eliminau';
+      } catch (error) {
+        console.error(error);
+
+        return 'Error';
+      }
+    },
+
+    newClient: async (_, { input }) => {},
   },
 };
 
