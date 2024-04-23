@@ -173,6 +173,42 @@ const resolvers = {
 
       return newClient;
     },
+
+    updateClient: async (_, { id, input }, context) => {
+      try {
+        const client = await Client.findById(id);
+
+        if (!client) throw new Error('El cliente no existe');
+
+        if (client.seller.toString() !== context.user._id)
+          throw new Error('No puede editar un cliente que no es suyo');
+
+        const updatedClient = await Client.findByIdAndUpdate(id, input, {
+          new: true,
+        });
+
+        return updatedClient;
+      } catch (error) {
+        console.error(error.message);
+      }
+    },
+
+    deleteClient: async (_, { id }, context) => {
+      try {
+        const client = await Client.findById(id);
+
+        if (!client) throw new Error('El cliente no existe');
+
+        if (client.seller.toString() !== context.user._id)
+          throw new Error('No puede eliminar un cliente que no es suyo');
+
+        await Client.findByIdAndDelete(id);
+
+        return 'Se ha eliminado con exito';
+      } catch (error) {
+        console.error(error.message);
+      }
+    },
   },
 };
 
