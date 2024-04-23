@@ -33,13 +33,25 @@ const resolvers = {
       }
     },
 
-    getAllClients: async () => {
+    getAllClients: async (_, __, context) => {
+      console.log(context);
+
       try {
-        const clients = await Client.find();
+        const clients = await Client.find({ seller: context.user._id });
 
         return clients;
       } catch (error) {
         console.error(error);
+      }
+    },
+
+    getAllClientsBySellerId: async (_, { id }) => {
+      try {
+        const clients = await Client.find({ seller: id });
+
+        return clients;
+      } catch (error) {
+        console.error(error.message);
       }
     },
   },
@@ -85,7 +97,7 @@ const resolvers = {
         {
           user,
         },
-        process.env.SECRET_KEY
+        process.env.SECRET_KEY,
       );
 
       return { token };
@@ -118,7 +130,7 @@ const resolvers = {
         const updatedProduct = await Product.findByIdAndUpdate(
           { _id: id },
           input,
-          { new: true }
+          { new: true },
         );
 
         return updatedProduct;
@@ -143,7 +155,24 @@ const resolvers = {
       }
     },
 
-    newClient: async (_, { input }) => {},
+    newClient: async (_, { input }, context) => {
+      const { email, name } = input;
+
+      const client = await Client.findOne({ email });
+
+      if (client)
+        throw new Error(
+          `El cliente ${name} con el email de ${email} ya existe`,
+        );
+
+      const newClient = new Client(input);
+
+      newClient.seller = context.user._id;
+
+      await newClient.save();
+
+      return newClient;
+    },
   },
 };
 

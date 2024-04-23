@@ -59,8 +59,6 @@ const typeDefs = gql`
     company: String
     email: String
     phoneNumber: String
-
-    seller: ID
   }
 
   "Queries"
@@ -74,6 +72,7 @@ const typeDefs = gql`
 
     "Client"
     getAllClients: [Client]
+    getAllClientsBySellerId(id: String): [Client]
   }
 
   "Mutations"
