@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Product from '../models/Product.model.js';
 import Client from '../models/Client.model.js';
+import Order from '../models/Order.model.js';
 
 const resolvers = {
   Query: {
@@ -204,9 +205,53 @@ const resolvers = {
 
         await Client.findByIdAndDelete(id);
 
-        return 'Se ha eliminado con exito';
+        return 'Se ha eliminado con éxito';
       } catch (error) {
         console.error(error.message);
+      }
+    },
+
+    newOrder: async (_, { input }, context) => {
+      try {
+        const client = await Client.findById(input.client);
+
+        if (!client) throw new Error('El cliente no existe');
+
+        if (client.seller.toString() !== context.user._id)
+          throw new Error(
+            'No puede asignar una orden a un cliente que no es suyo',
+          );
+
+        let total = 0;
+
+        input.products.forEach(async product => {
+          const productFromDB = await Product.findById(product._id);
+
+          console.log(product);
+
+          if (!productFromDB)
+            throw new Error(`El producto con id: ${product._id} no existe`);
+
+          if (product.quantity > productFromDB.stock)
+            throw new Error(
+              `El stock del producto ${productFromDB.name} no es suficiente`,
+            );
+
+          productFromDB.stock -= product.quantity;
+          total += productFromDB.price * product.quantity;
+
+          await productFromDB.save();
+        });
+
+        const newOrder = new Order(input);
+        newOrder.seller = context.user._id;
+        newOrder.total = total;
+
+        console.log(newOrder);
+
+        return await newOrder.save();
+      } catch (error) {
+        console.error(error);
       }
     },
   },

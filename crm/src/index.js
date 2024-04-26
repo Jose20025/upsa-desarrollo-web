@@ -11,6 +11,7 @@ connectDatabase();
 
 // Servidor
 const server = new ApolloServer({
+  introspection: true,
   typeDefs,
   resolvers,
   context: ({ req }) => {
