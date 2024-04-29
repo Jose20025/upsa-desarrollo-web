@@ -1,6 +1,14 @@
 import gql from 'graphql-tag';
 
 export const typeDefs = gql`
+  "Enum"
+  enum OrderStatus {
+    PENDING
+    APPROVED
+    REJECTED
+  }
+
+  "Types"
   type Token {
     token: String
   }
@@ -33,6 +41,21 @@ export const typeDefs = gql`
     seller: ID
   }
 
+  type ProductGroup {
+    product: ID
+    quantity: Int
+  }
+
+  type Order {
+    _id: ID
+    products: [ProductGroup]
+    total: Float
+    client: ID
+    seller: ID
+    status: OrderStatus
+    dateCreated: String
+  }
+
   "Inputs"
   input UserInput {
     name: String
@@ -58,6 +81,18 @@ export const typeDefs = gql`
     company: String
     email: String
     phoneNumber: String
+  }
+
+  input OrderProductInput {
+    _id: ID
+    quantity: Int
+  }
+
+  input OrderInput {
+    products: [OrderProductInput]
+    total: Float
+    client: ID
+    status: OrderStatus
   }
 
   "Queries"
@@ -88,5 +123,9 @@ export const typeDefs = gql`
     createNewClient(input: ClientInput!): Client
     updateClient(id: ID!, input: ClientInput!): Client
     deleteClient(id: ID!): String
+
+    "Order"
+    createNewOrder(input: OrderInput): Order
+    deleteOrder(id: ID!): String
   }
 `;

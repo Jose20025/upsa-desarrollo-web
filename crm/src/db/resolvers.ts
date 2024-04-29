@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import Product from '../models/Product';
 import Client from '../models/Client';
 import 'dotenv/config';
+import Order, { OrderStatus } from '../models/Order';
 
 interface CreateUserArgs {
   input: {
@@ -59,6 +60,20 @@ interface UpdateClientArgs {
     phoneNumber?: string;
   };
   id: string;
+}
+
+interface OrderProductArgs {
+  _id: string;
+  quantity: number;
+}
+
+interface CreateOrderArgs {
+  input: {
+    products: OrderProductArgs[];
+    total?: number;
+    client: string;
+    status?: OrderStatus;
+  };
 }
 
 export const resolvers = {
@@ -255,6 +270,89 @@ export const resolvers = {
       }
     },
 
-    deleteClient: async () => {},
+    deleteClient: async (_: any, { id }: { id: string }, context: Context) => {
+      try {
+        const client = await Client.findById(id);
+
+        if (!client) throw new Error('El cliente no existe');
+
+        if (client.seller.toString() !== context.user!._id.toString())
+          throw new Error('No puede eliminar un cliente que no es suyo');
+
+        await client.deleteOne();
+
+        return 'Se ha eliminado con éxito';
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    createNewOrder: async (
+      _: any,
+      { input }: CreateOrderArgs,
+      context: Context,
+    ) => {
+      try {
+        const client = await Client.findById(input.client);
+
+        if (!client) throw new Error('El cliente no existe');
+
+        if (client.seller.toString() !== context.user!._id.toString())
+          throw new Error(
+            'No puede asignar una orden a un cliente que no es suyo',
+          );
+
+        let orderTotal: number = 0;
+
+        for (let index = 0; index < input.products.length; index++) {
+          const productGroup = input.products[index];
+
+          const productFromDB = await Product.findById(productGroup._id);
+
+          if (!productFromDB)
+            throw new Error(
+              `El producto con id: ${productGroup._id} no existe`,
+            );
+
+          if (productGroup.quantity > productFromDB.stock)
+            throw new Error(
+              `El stock del producto ${productFromDB.name} no es suficiente`,
+            );
+
+          productFromDB.stock -= productGroup.quantity;
+          orderTotal += productFromDB.price * productGroup.quantity;
+
+          await productFromDB.save();
+        }
+
+        const newOrder = new Order({
+          ...input,
+          seller: context.user!._id,
+          total: orderTotal,
+        });
+
+        await newOrder.save();
+
+        return newOrder;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    deleteOrder: async (_: any, { id }: { id: string }, context: Context) => {
+      try {
+        const order = await Order.findById(id);
+
+        if (!order) throw new Error('La orden no existe');
+
+        if (order.seller.toString() !== context.user!._id.toString())
+          throw new Error('No puedes eliminar una orden que no es tuya!');
+
+        await order.deleteOne();
+
+        return 'Eliminada con éxito';
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
 };
